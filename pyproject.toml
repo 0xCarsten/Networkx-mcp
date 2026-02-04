@@ -1,0 +1,71 @@
+[project]
+name = "networkx-mcp"
+version = "0.1.0"
+description = "An MCP server exposing NetworkX graph analytics tools (shortest path, attribute-based filtering, and fuzzy attribute discovery) over FastMCP/FastAPI."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.128.0",
+    "fastmcp>=3.0.0b1",
+    "loguru>=0.7.3",
+    "networkx>=3.6.1",
+    "uvicorn>=0.40.0",
+]
+
+
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+  "E",   #pycdestyle
+  "F",   #pyflakes
+  "B",   #bugbear
+  "C4",  #comprehensions
+  "PIE", #PIE
+  "UP",  #pyupgrade
+  "I",   #isort
+  "S",   #bandit
+]
+ignore = [
+  "E501", #let black do the formatting
+  "E721",
+  "C416",
+  "B905",
+]
+
+[tool.ruff.lint.flake8-comprehensions]
+allow-dict-calls-with-keyword-arguments = true
+
+[tool.ruff.lint.per-file-ignores]
+# Allow assert in tests
+"tests/*" = ["S101"]
+
+
+[tool.pyright]
+reportMissingImports = false
+reportMissingTypeStubs = false
+pythonVersion = "3.11"
+typeCheckingMode = "basic"
+
+[tool.black]
+line-length = 120
+target-version = ['py310']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | examples
+)/
+'''

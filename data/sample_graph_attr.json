@@ -1,0 +1,92 @@
+{
+  "directed": true,
+  "multigraph": true,
+  "graph": {},
+  "nodes": [
+    {
+      "demand": [],
+      "holdup": 10,
+      "holdup_min": 0,
+      "holdup_max": 20,
+      "object_type": "Tank",
+      "id": "A",
+      "CM1": 10,
+      "cost": 1
+    },
+    {
+      "demand": [],
+      "holdup": 0,
+      "holdup_min": 0,
+      "holdup_max": 20,
+      "object_type": "Tank",
+      "id": "D",
+      "CM1": 0,
+      "cost": 0.2
+    },
+    {
+      "demand": [],
+      "holdup": 0,
+      "holdup_min": 0,
+      "holdup_max": 10,
+      "object_type": "Balance",
+      "id": "C",
+      "CM1": 0
+    },
+    {
+      "demand": [],
+      "holdup": 0,
+      "holdup_min": 0,
+      "holdup_max": 10,
+      "object_type": "PosBalance",
+      "id": "F",
+      "CM1": 0
+    },
+
+    {
+      "object_type": "Plant",
+      "id": "B"
+    }
+  ],
+  "links": [
+    {
+      "sap_quantity": 1,
+      "capacity": 10,
+      "transport_time": 0,
+      "source": "A",
+      "target": "B",
+      "key": 0,
+      "edge_type": "transport",
+      "demand": []
+    },
+    {
+      "sap_quantity": 2,
+      "capacity": 20,
+      "transport_time": 0,
+      "source": "B",
+      "target": "C",
+      "key": 0,
+      "edge_type": "transport",
+      "demand": []
+    },
+    {
+      "sap_quantity": 2,
+      "capacity": 20,
+      "transport_time": 0,
+      "source": "C",
+      "target": "D",
+      "key": 0,
+      "edge_type": "transport",
+      "demand": [
+        {
+          "name": "test_order1",
+          "amount": 1.0,
+          "starttime": 2.0,
+          "endtime": 5.0,
+          "id": "order_D",
+          "source": "C",
+          "target": "D"
+        }
+      ]
+    }
+  ]
+}
