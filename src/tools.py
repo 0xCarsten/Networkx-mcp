@@ -12,10 +12,9 @@ from typing import Literal
 
 import networkx as nx
 from fastmcp import FastMCP
-from loguru import logger
 
 from src.base.base import Graph
-from src.base.graph_analytics import edges_by_attribute, nodes_by_attribute
+from src.base.graph_analytics import NetworkXGraph
 from src.cache import _resolve_graph, cache_graph
 from src.classes import (
     AttributeMatchRequest,
@@ -153,8 +152,8 @@ def register_tools(mcp: FastMCP) -> None:
         operator: Literal["==", "!=", "<", "<=", ">", ">="],
         graph_data: dict | None = None,
     ) -> ResultsModel | ErrorModel:
-        """Return node IDs whose node attribute matches the requested predicate.
-
+        """Return a list of node IDs whose node attribute matches the requested predicate.
+        E.g "find all nodes where 'age' > 30" or "find all nodes where 'type' == 'person'".
 
         Parameters
         ----------
@@ -183,9 +182,8 @@ def register_tools(mcp: FastMCP) -> None:
                 operator=operator,
                 graph_data=graph_data,
             )
-            logger.info(request)
             G = _resolve_graph(request.graph_data, request.uri)
-            matching_nodes = nodes_by_attribute(G, request.attribute, request.value, request.operator)
+            matching_nodes = NetworkXGraph.nodes_by_attribute(G, request.attribute, request.value, request.operator)
             return ResultsModel(matches=matching_nodes)
         except (KeyError, TypeError, ValueError) as e:
             return ErrorModel(error=f"Invalid input: {e}")
@@ -208,7 +206,8 @@ def register_tools(mcp: FastMCP) -> None:
         operator: Literal["==", "!=", "<", "<=", ">", ">="],
         graph_data: dict | None = None,
     ) -> ResultsModel | ErrorModel:
-        """Return edges whose edge attribute matches the requested predicate.
+        """Return a list of edges IDs whose edges attribute matches the requested predicate.
+        E.g "find all edges where 'weight' < 1.0" or "find all edges where 'type' == 'friends'".
 
         Parameters
         ----------
@@ -237,7 +236,7 @@ def register_tools(mcp: FastMCP) -> None:
                 graph_data=graph_data,
             )
             G = _resolve_graph(request.graph_data, request.uri)
-            matching_edges = edges_by_attribute(G, request.attribute, request.value, request.operator)
+            matching_edges = NetworkXGraph.edges_by_attribute(G, request.attribute, request.value, request.operator)
             return ResultsModel(matches=matching_edges)
         except (KeyError, TypeError, ValueError) as e:
             return ErrorModel(error=f"Invalid input: {e}")
@@ -253,7 +252,8 @@ def register_tools(mcp: FastMCP) -> None:
     def find_best_matching_node_attribute(
         uri: str, attribute: str, graph_data: dict | None = None
     ) -> ResultsAttributesModel | ErrorModel:
-        """Return node attribute *names* whose key partially matches the provided string.
+        """Return a list of node attribute keys which at least partially matches the provided attribute.
+        E.g. if attribute="age", it would match "age", "age_years", "average_age", etc.
 
         Parameters
         ----------
@@ -275,12 +275,7 @@ def register_tools(mcp: FastMCP) -> None:
         except ValueError as e:
             return ErrorModel(error=str(e))
 
-        matching_attributes = []
-        for _, data in G.nodes(data=True):
-            attrs = list(data.keys())
-            matches = [match for match in attrs if request.attribute.lower() in match.lower()]
-            if matches:
-                matching_attributes.extend(matches)
+        matching_attributes = NetworkXGraph.matching_attributes(G, request.attribute, type="node")
 
         return ResultsAttributesModel(matching_attributes=list(set(matching_attributes)))
 
@@ -296,7 +291,8 @@ def register_tools(mcp: FastMCP) -> None:
     def find_best_matching_edge_attribute(
         request: AttributeMatchRequest,
     ) -> ResultsAttributesModel | ErrorModel:
-        """Return edge attribute *names* whose key partially matches the provided string.
+        """Return a list of edge attribute keys which at least partially matches the provided attribute.
+        E.g. if attribute="weight", it would match "weight", "max_weight", "average_weight", etc.
 
 
         Parameters
@@ -320,11 +316,6 @@ def register_tools(mcp: FastMCP) -> None:
         except ValueError as e:
             return ErrorModel(error=str(e))
 
-        matching_attributes = []
-        for _, _, data in G.edges(data=True):
-            attrs = list(data.keys())
-            matches = [match for match in attrs if request.attribute.lower() in match.lower()]
-            if matches:
-                matching_attributes.extend(matches)
+        matching_attributes = NetworkXGraph.matching_attributes(G, request.attribute, type="edge")
 
         return ResultsAttributesModel(matching_attributes=list(set(matching_attributes)))

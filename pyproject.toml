@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "networkx-mcp"
 version = "0.1.0"
@@ -9,9 +13,13 @@ dependencies = [
     "fastmcp>=3.0.0b1",
     "loguru>=0.7.3",
     "networkx>=3.6.1",
+    "pytest>=9.0.2",
     "uvicorn>=0.40.0",
 ]
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
 
 
 [tool.ruff]
